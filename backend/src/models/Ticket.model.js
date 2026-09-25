@@ -1,4 +1,4 @@
-import mongoose, { mongoosePopulatedDocumentMarker } from "mongoose";
+import mongoose from "mongoose";
 import TICKET_STATUS from "../constants/ticketStatus.js";
 
 const ticketSchema = new mongoose.Schema(
