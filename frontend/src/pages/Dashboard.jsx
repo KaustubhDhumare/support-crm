@@ -42,16 +42,46 @@ const Dashboard = () => {
     return {
       open: tickets.filter((ticket) => ticket.status === "Open").length,
 
-      inProgress: tickets.filter((ticket) => ticket.status === "In Progress")
-        .length,
+      inProgress: tickets.filter(
+        (ticket) => ticket.status === "In Progress"
+      ).length,
 
       closed: tickets.filter((ticket) => ticket.status === "Closed").length,
     };
   }, [tickets]);
 
+  // Create the donut chart dynamically from ticket counts
+  const chartStyle = useMemo(() => {
+    const total = tickets.length;
+
+    if (total === 0) {
+      return {
+        background: "conic-gradient(#e2e8f0 0deg 360deg)",
+      };
+    }
+
+    const openDegrees = (counts.open / total) * 360;
+    const inProgressDegrees = (counts.inProgress / total) * 360;
+
+    const inProgressStart = openDegrees;
+    const inProgressEnd = openDegrees + inProgressDegrees;
+
+    return {
+      background: `
+        conic-gradient(
+          #f97316 0deg ${openDegrees}deg,
+          #0d9488 ${inProgressStart}deg ${inProgressEnd}deg,
+          #e2e8f0 ${inProgressEnd}deg 360deg
+        )
+      `,
+    };
+  }, [tickets.length, counts]);
+
   if (loading) {
     return (
-      <div className="p-8 text-sm text-slate-500">Loading dashboard...</div>
+      <div className="p-8 text-sm text-slate-500">
+        Loading dashboard...
+      </div>
     );
   }
 
@@ -62,6 +92,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
       <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
+
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-slate-900">
@@ -83,6 +114,7 @@ const Dashboard = () => {
 
         {/* Overview */}
         <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-2">
+
           {/* Ticket overview */}
           <div className="rounded-xl border border-slate-200 bg-white p-6">
             <div className="flex items-center justify-between">
@@ -99,32 +131,57 @@ const Dashboard = () => {
               <Clock3 size={19} className="text-slate-400" />
             </div>
 
+            {/* Donut Chart */}
             <div className="mt-8 flex items-center justify-center">
-              <div className="flex h-40 w-40 items-center justify-center rounded-full border-[18px] border-slate-200">
-                <div className="text-center">
-                  <p className="text-3xl font-semibold text-slate-900">
-                    {tickets.length}
-                  </p>
+              <div
+                className="relative flex h-40 w-40 items-center justify-center rounded-full"
+                style={chartStyle}
+              >
+                {/* Inner circle creates donut effect */}
+                <div className="flex h-[104px] w-[104px] items-center justify-center rounded-full bg-white"> 
+                  <div className="text-center">
+                    <p className="text-3xl font-semibold text-slate-900">
+                      {tickets.length}
+                    </p>
 
-                  <p className="text-xs text-slate-400">tickets</p>
+                    <p className="text-xs text-slate-900">
+                      tickets
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
 
+            {/* Legend */}
             <div className="mt-7 space-y-4">
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <CircleDot size={13} className="text-orange-500" />
-                  <span className="text-sm text-slate-600">Open</span>
+                  <CircleDot
+                    size={13}
+                    className="text-orange-500"
+                  />
+
+                  <span className="text-sm text-slate-600">
+                    Open
+                  </span>
                 </div>
 
-                <span className="text-sm font-semibold">{counts.open}</span>
+                <span className="text-sm font-semibold">
+                  {counts.open}
+                </span>
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <CircleDot size={13} className="text-teal-600" />
-                  <span className="text-sm text-slate-600">In Progress</span>
+                  <CircleDot
+                    size={13}
+                    className="text-teal-600"
+                  />
+
+                  <span className="text-sm text-slate-900">
+                    In Progress
+                  </span>
                 </div>
 
                 <span className="text-sm font-semibold">
@@ -134,12 +191,21 @@ const Dashboard = () => {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <CircleCheck size={13} className="text-slate-400" />
-                  <span className="text-sm text-slate-600">Closed</span>
+                  <CircleCheck
+                    size={13}
+                    className="text-slate-900"
+                  />
+
+                  <span className="text-sm text-slate-900">
+                    Closed
+                  </span>
                 </div>
 
-                <span className="text-sm font-semibold">{counts.closed}</span>
+                <span className="text-sm font-semibold">
+                  {counts.closed}
+                </span>
               </div>
+
             </div>
           </div>
 
@@ -147,7 +213,9 @@ const Dashboard = () => {
           <div className="rounded-xl border border-slate-200 bg-white p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-semibold text-slate-900">Recent Tickets</h2>
+                <h2 className="font-semibold text-slate-900">
+                  Recent Tickets
+                </h2>
 
                 <p className="mt-1 text-xs text-slate-400">
                   Latest customer requests
@@ -196,7 +264,9 @@ const Dashboard = () => {
         <section className="mt-6 rounded-xl border border-slate-200 bg-white">
           <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
             <div>
-              <h2 className="font-semibold text-slate-900">Recent Tickets</h2>
+              <h2 className="font-semibold text-slate-900">
+                Recent Tickets
+              </h2>
 
               <p className="mt-1 text-xs text-slate-400">
                 Latest tickets in your queue
@@ -237,6 +307,7 @@ const Dashboard = () => {
             ))}
           </div>
         </section>
+
       </div>
     </div>
   );
