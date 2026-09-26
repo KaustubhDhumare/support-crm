@@ -42,7 +42,10 @@ const getTickets = async ({ search, status, page = 1, limit = 10 }) => {
   }
 
   if (status) {
-    query.status = status;
+    query.status = {
+      $regex: `^${status}$`,
+      $options: "i",
+    };
   }
 
   const currentPage = Math.max(Number(page) || 1, 1);
