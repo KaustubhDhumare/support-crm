@@ -1,88 +1,245 @@
-import { useEffect, useState } from "react";
-import { getTickets } from "../services/ticketService.js";
-import DashboardStats from "../components/DashboardStats.jsx";
-import TicketTable from "../components/TicketTable.jsx";
+import { useEffect, useMemo, useState } from "react";
+import {
+  ArrowRight,
+  Clock3,
+  CircleCheck,
+  CircleDot,
+  Ticket,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import { getTickets } from "../services/ticketService";
+
+import DashboardStats from "../components/dashboard/DashboardStats";
+import StatusBadge from "../components/tickets/StatusBadge";
 
 const Dashboard = () => {
-    const [tickets, setTickets] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    useEffect(() => {
-        const fetchTickets = async () => {
-            try {
-                setLoading(true);
-                setError("");
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const response = await getTickets({
+          page: 1,
+          limit: 8,
+        });
 
-                const response = await getTickets();
+        setTickets(response.data.tickets);
+      } catch (error) {
+        console.error(error);
 
-                setTickets(response.data.tickets);
-            } catch (error) {
-                console.error(error);
+        setError(error.response?.data?.message || "Failed to load dashboard");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-                setError(
-                    error.response?.data?.message ||
-                    "Failed to load tickets"
-                );
-            } finally {
-                setLoading(false);
-            }
-        };
+    fetchTickets();
+  }, []);
 
-        fetchTickets();
-    }, []);
+  const counts = useMemo(() => {
+    return {
+      open: tickets.filter((ticket) => ticket.status === "Open").length,
 
-    if (loading) {
-        return (
-            <div className="flex min-h-screen items-center justify-center">
-                <p className="text-gray-500">
-                    Loading tickets...
-                </p>
-            </div>
-        );
-    }
+      inProgress: tickets.filter((ticket) => ticket.status === "In Progress")
+        .length,
 
-    if (error) {
-        return (
-            <div className="flex min-h-screen items-center justify-center">
-                <div className="rounded-lg bg-red-50 px-6 py-4 text-red-600">
-                    {error}
-                </div>
-            </div>
-        );
-    }
+      closed: tickets.filter((ticket) => ticket.status === "Closed").length,
+    };
+  }, [tickets]);
 
+  if (loading) {
     return (
-        <div className="min-h-screen bg-gray-50">
-            <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">
-                        Support CRM
-                    </h1>
+      <div className="p-8 text-sm text-slate-500">Loading dashboard...</div>
+    );
+  }
 
-                    <p className="mt-1 text-sm text-gray-500">
-                        Manage and track customer support tickets.
-                    </p>
+  if (error) {
+    return <div className="p-8 text-sm text-red-600">{error}</div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-[#f5f7f9]">
+      <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-semibold text-slate-900">
+            Good morning, Ava
+          </h1>
+
+          <p className="mt-1 text-sm text-slate-500">
+            Here's what's happening with your support queue.
+          </p>
+        </div>
+
+        {/* Stats */}
+        <DashboardStats
+          totalTickets={tickets.length}
+          openTickets={counts.open}
+          inProgressTickets={counts.inProgress}
+          closedTickets={counts.closed}
+        />
+
+        {/* Overview */}
+        <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-2">
+          {/* Ticket overview */}
+          <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-semibold text-slate-900">
+                  Ticket Overview
+                </h2>
+
+                <p className="mt-1 text-xs text-slate-400">
+                  Current ticket distribution
+                </p>
+              </div>
+
+              <Clock3 size={19} className="text-slate-400" />
+            </div>
+
+            <div className="mt-8 flex items-center justify-center">
+              <div className="flex h-40 w-40 items-center justify-center rounded-full border-[18px] border-slate-200">
+                <div className="text-center">
+                  <p className="text-3xl font-semibold text-slate-900">
+                    {tickets.length}
+                  </p>
+
+                  <p className="text-xs text-slate-400">tickets</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-7 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CircleDot size={13} className="text-orange-500" />
+                  <span className="text-sm text-slate-600">Open</span>
                 </div>
 
-                <DashboardStats tickets={tickets} />
+                <span className="text-sm font-semibold">{counts.open}</span>
+              </div>
 
-                <section className="mt-8">
-                    <div className="mb-4">
-                        <h2 className="text-xl font-semibold text-gray-900">
-                            Tickets
-                        </h2>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CircleDot size={13} className="text-teal-600" />
+                  <span className="text-sm text-slate-600">In Progress</span>
+                </div>
 
-                        <p className="text-sm text-gray-500">
-                            Recent customer support tickets
-                        </p>
+                <span className="text-sm font-semibold">
+                  {counts.inProgress}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CircleCheck size={13} className="text-slate-400" />
+                  <span className="text-sm text-slate-600">Closed</span>
+                </div>
+
+                <span className="text-sm font-semibold">{counts.closed}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Recent activity */}
+          <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-semibold text-slate-900">Recent Tickets</h2>
+
+                <p className="mt-1 text-xs text-slate-400">
+                  Latest customer requests
+                </p>
+              </div>
+
+              <Link
+                to="/tickets"
+                className="flex items-center gap-1 text-sm font-medium text-teal-700"
+              >
+                All tickets
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+
+            <div className="mt-5 space-y-1">
+              {tickets.slice(0, 5).map((ticket) => (
+                <div
+                  key={ticket._id}
+                  className="flex items-center justify-between border-b border-slate-100 py-4 last:border-0"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+                      <Ticket size={17} />
                     </div>
 
-                    <TicketTable tickets={tickets} />
-                </section>
-            </main>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-slate-800">
+                        {ticket.subject}
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-400">
+                        {ticket.ticketId} · {ticket.customerName}
+                      </p>
+                    </div>
+                  </div>
+
+                  <StatusBadge status={ticket.status} />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-    );
+
+        {/* Recent table */}
+        <section className="mt-6 rounded-xl border border-slate-200 bg-white">
+          <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+            <div>
+              <h2 className="font-semibold text-slate-900">Recent Tickets</h2>
+
+              <p className="mt-1 text-xs text-slate-400">
+                Latest tickets in your queue
+              </p>
+            </div>
+
+            <Link
+              to="/tickets"
+              className="flex items-center gap-1 text-sm font-medium text-teal-700"
+            >
+              View All
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className="divide-y divide-slate-100">
+            {tickets.slice(0, 5).map((ticket) => (
+              <div
+                key={ticket._id}
+                className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p className="text-xs font-semibold text-teal-700">
+                    {ticket.ticketId}
+                  </p>
+
+                  <p className="mt-1 font-medium text-slate-800">
+                    {ticket.subject}
+                  </p>
+
+                  <p className="mt-1 text-xs text-slate-400">
+                    {ticket.customerName} · {ticket.customerEmail}
+                  </p>
+                </div>
+
+                <StatusBadge status={ticket.status} />
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;
