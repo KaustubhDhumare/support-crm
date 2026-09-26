@@ -1,28 +1,9 @@
-import { useEffect } from "react";
-import { getTickets } from "./services/ticketService.js";
+import Dashboard from "./pages/Dashboard.jsx"
 
 function App() {
-      useEffect(() => {
-        const testApi = async () => {
-            try {
-                const response = await getTickets();
 
-                console.log("API response:", response);
-            } catch (error) {
-                console.error("API error:", error);
-            }
-        };
-
-        testApi();
-    }, []);
-
-  return (
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-            <h1 className="text-3xl font-bold">
-                Support CRM
-            </h1>
-        </div>
-  )
+  return <Dashboard />
+  
 }
 
 export default App
