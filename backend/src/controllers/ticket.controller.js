@@ -1,6 +1,11 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import { createTicket as createTicketService, getTickets, getTicketById as getTicketByIdService, updateTicket as updateTicketService } from "../services/ticket.service.js";
+import {
+  createTicket as createTicketService,
+  getTickets,
+  getTicketById as getTicketByIdService,
+  updateTicket as updateTicketService,
+} from "../services/ticket.service.js";
 
 const createTicket = asyncHandler(async (req, res) => {
   const ticket = await createTicketService(req.body);
@@ -13,9 +18,9 @@ const createTicket = asyncHandler(async (req, res) => {
 const getAllTickets = asyncHandler(async (req, res) => {
   const tickets = await getTickets(req.query);
 
-  res 
+  res
     .status(200)
-    .json(new ApiResponse(200, tickets,  "All tickets fetched successfully"));
+    .json(new ApiResponse(200, tickets, "All tickets fetched successfully"));
 });
 
 const getTicketById = asyncHandler(async (req, res) => {
@@ -23,24 +28,15 @@ const getTicketById = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    .json( new ApiResponse(200, ticket, "Ticket fetched successfully"))
-})
-
+    .json(new ApiResponse(200, ticket, "Ticket fetched successfully"));
+});
 
 const updateTicket = asyncHandler(async (req, res) => {
   const ticket = await updateTicketService(req.params.ticketId, req.body);
 
-  res 
+  res
     .status(200)
-    .json(
-      new ApiResponse(200, ticket, "Ticket updated successfully")
-    );
-
+    .json(new ApiResponse(200, ticket, "Ticket updated successfully"));
 });
 
-export {
-    createTicket,
-    getAllTickets,
-    getTicketById,
-    updateTicket,
-};
+export { createTicket, getAllTickets, getTicketById, updateTicket };

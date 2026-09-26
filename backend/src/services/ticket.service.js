@@ -83,44 +83,26 @@ const getTicketById = async (ticketId) => {
 };
 
 const updateTicket = async (ticketId, updateData) => {
-  const allowedFields = [
-    "customerName",
-    "customerEmail",
-    "subject",
-    "description",
-    "status",
-  ];
+    const { status } = updateData;
 
-  const updates = {};
-
-  for (const field of allowedFields) {
-    if (updateData[field] !== undefined) {
-      if (typeof updateData[field] === "string" && !updateData[field].trim()) {
-        throw new ApiError(400, `${field} cannot be empty`);
-      }
-
-      updates[field] = updateData[field];
+    if (!status || !status.trim()) {
+        throw new ApiError(400, "Status is required");
     }
-  }
 
-  if (Object.keys(updates).length === 0) {
-    throw new ApiError(400, "No valid fields provided for update");
-  }
+    const ticket = await Ticket.findOneAndUpdate(
+        { ticketId },
+        { $set: { status } },
+        {
+            new: true,
+            runValidators: true,
+        }
+    );
 
-  const ticket = await Ticket.findOneAndUpdate(
-    { ticketId },
-    { $set: updates },
-    {
-      new: true,
-      runValidators: true,
-    },
-  );
+    if (!ticket) {
+        throw new ApiError(404, "Ticket not found");
+    }
 
-  if (!ticket) {
-    throw new ApiError(404, "Ticket not found");
-  }
-
-  return ticket;
+    return ticket;
 };
 
 export { createTicket, getTickets, getTicketById, updateTicket };
