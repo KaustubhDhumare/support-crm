@@ -7,29 +7,23 @@ import notFound from "./middlewares/notFound.middleware.js";
 
 // Routes
 import ticketRoutes from "./routes/ticket.routes.js";
-
+import noteRoutes from "./routes/note.routes.js";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/health", (req,res) => {
-    res.status(200).json({
-        success:true,
-        message: "Support CRM API is running"
-    });
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Support CRM API is running",
+  });
 });
 
 app.use("/api/tickets", ticketRoutes);
 
-
-
-
-
-
-
-
+app.use("/api/tickets", noteRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

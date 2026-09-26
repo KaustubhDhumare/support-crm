@@ -41,6 +41,8 @@ const getTickets = async ({ search, status, page = 1, limit = 10 }) => {
 
   const [tickets, totalTickets] = await Promise.all([
     Ticket.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+
+    Ticket.countDocuments(query)
   ]);
 
   const totalPages = Math.ceil(totalTickets / limit);
