@@ -11,11 +11,20 @@ import noteRoutes from "./routes/note.routes.js";
 
 const app = express();
 
+const frontendOrigins = process.env.FRONTEND_URL
+  ?.split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+  .map((origin) => new URL(origin).origin);
+
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: frontendOrigins?.length ? frontendOrigins : undefined,
   }),
 );
+
+
 app.use(express.json({ limit: "10kb" }));
 
 app.get("/api/health", (req, res) => {
