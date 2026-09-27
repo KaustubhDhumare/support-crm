@@ -14,6 +14,15 @@ Each has its own detailed README:
 - [`backend/README.md`](./backend/README.md)
 - [`frontend/README.md`](./frontend/README.md)
 
+
+## Live Demo
+
+- **Frontend:** https://support-crm-rqbl.vercel.app/
+- **Backend API:** https://support-crm-vwu2.onrender.com/api
+- **API Health Check:** https://support-crm-vwu2.onrender.com/api/health
+
+
+
 ## Features
 
 - **Dashboard** with ticket stats overview
@@ -33,10 +42,10 @@ Each has its own detailed README:
 ## Architecture
 
 ```
-┌─────────────────┐        HTTP (Axios)        ┌──────────────────┐        Mongoose        ┌───────────┐
-│   Frontend       │  ────────────────────────▶ │   Backend         │  ────────────────────▶ │  MongoDB   │
-│  React + Vite     │  ◀────────────────────────  │  Express API      │  ◀────────────────────  │            │
-│  (localhost:5173) │        JSON responses        │  (localhost:5000) │                        │            │
+┌─────────────────┐        HTTPS / Axios        ┌──────────────────┐        Mongoose        ┌───────────┐
+│   Frontend      │  ─────────────────────────▶ │   Backend        │  ───────────────────▶ │  MongoDB  │
+│ React + Vite    │  ◀───────────────────────── │ Express API      │  ◀─────────────────── │           │
+│    Vercel       │       JSON responses        │     Render       │                        │   Atlas   │
 └─────────────────┘                             └──────────────────┘                        └───────────┘
 ```
 
