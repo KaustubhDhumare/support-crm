@@ -22,7 +22,7 @@ const Dashboard = () => {
       try {
         const response = await getTickets({
           page: 1,
-          limit: 8,
+          limit: 100,
         });
 
         setTickets(response.data.tickets);
@@ -66,15 +66,15 @@ const Dashboard = () => {
     const inProgressStart = openDegrees;
     const inProgressEnd = openDegrees + inProgressDegrees;
 
-    return {
-      background: `
-        conic-gradient(
-          #f97316 0deg ${openDegrees}deg,
-          #0d9488 ${inProgressStart}deg ${inProgressEnd}deg,
-          #e2e8f0 ${inProgressEnd}deg 360deg
-        )
-      `,
-    };
+return {
+  background: `
+    conic-gradient(
+      #f97316 0deg ${openDegrees}deg,
+      #0d9488 ${inProgressStart}deg ${inProgressEnd}deg,
+      #94a3b8 ${inProgressEnd}deg 360deg
+    )
+  `,
+};
   }, [tickets.length, counts]);
 
   if (loading) {
@@ -193,7 +193,7 @@ const Dashboard = () => {
                 <div className="flex items-center gap-2">
                   <CircleCheck
                     size={13}
-                    className="text-slate-900"
+                    className="text-slate-400"
                   />
 
                   <span className="text-sm text-slate-900">
